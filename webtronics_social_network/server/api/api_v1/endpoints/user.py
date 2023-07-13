@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from starlette.status import (
@@ -104,8 +104,8 @@ async def refresh(
     responses=user_auth_responses
 )
 async def read_all(
-        offset: int = 0,
-        limit: int = 5,
+        offset: int = Query(default=0, ge=0, le=500),
+        limit: int = Query(default=5, ge=1, le=1000),
         pg_holder: PostgresHolder = Depends(PostgresHolderMarker)
 ):
     users = await pg_holder.user.read_all(offset=offset, limit=limit)

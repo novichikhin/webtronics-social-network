@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 
 from webtronics_social_network import types, exceptions
@@ -17,8 +17,8 @@ router = APIRouter(responses=user_auth_responses, dependencies=[Depends(get_user
 
 @router.get("/", response_model=list[types.Post])
 async def read_all(
-        offset: int = 0,
-        limit: int = 5,
+        offset: int = Query(default=0, ge=0, le=500),
+        limit: int = Query(default=5, ge=1, le=1000),
         pg_holder: PostgresHolder = Depends(PostgresHolderMarker),
         redis_holder: RedisHolder = Depends(RedisHolderMarker)
 ):
