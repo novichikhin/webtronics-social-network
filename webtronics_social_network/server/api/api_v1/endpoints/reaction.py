@@ -49,13 +49,11 @@ async def create(
             detail="Post not found"
         )
 
-    """
     if post.creator_id == user.id:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail="You can only post reactions to other people's posts"
         )
-    """
 
     reaction = await pg_holder.reaction.create(
         post_id=reaction_create.post_id,
