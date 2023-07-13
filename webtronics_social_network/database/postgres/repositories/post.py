@@ -29,7 +29,7 @@ class PostRepository(PostgresRepository[models.Post]):
 
     async def update(
             self,
-            post_id: int,
+            post_id: uuid.UUID,
             creator_id: uuid.UUID,
             data: dict
     ) -> Optional[dto.Post]:
@@ -66,7 +66,7 @@ class PostRepository(PostgresRepository[models.Post]):
 
     async def delete(
             self,
-            post_id: int,
+            post_id: uuid.UUID,
             creator_id: uuid.UUID
     ) -> Optional[dto.Post]:
         post: Optional[models.Post] = await self._delete(

@@ -15,10 +15,7 @@ from webtronics_social_network.types import errors
 router = APIRouter(responses=user_auth_responses, dependencies=[Depends(get_user)])
 
 
-@router.get(
-    "/{post_id}",
-    response_model=list[types.Reaction]
-)
+@router.get("/{post_id}", response_model=list[types.Reaction])
 async def read(post_id: uuid.UUID, redis_holder: RedisHolder = Depends(RedisHolderMarker)):
     reactions = await redis_holder.reaction.read_by_post_id(post_id=post_id)
 
@@ -52,13 +49,22 @@ async def create(
             detail="Post not found"
         )
 
+    """
     if post.creator_id == user.id:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN,
             detail="You can only post reactions to other people's posts"
         )
+    """
 
-    reaction = await redis_holder.reaction.create(
+    reaction = await pg_holder.reaction.create(
+        post_id=reaction_create.post_id,
+        user_id=user.id,
+        type=reaction_create.type
+    )
+
+    await redis_holder.reaction.create(
+        reaction_id=reaction.id,
         post_id=reaction_create.post_id,
         user_id=user.id,
         type=reaction_create.type
@@ -78,13 +84,20 @@ async def create(
 )
 async def delete(
         post_id: uuid.UUID,
+        pg_holder: PostgresHolder = Depends(PostgresHolderMarker),
         redis_holder: RedisHolder = Depends(RedisHolderMarker),
         user: types.User = Depends(get_user)
 ):
-    reaction = await redis_holder.reaction.delete(post_id=post_id, user_id=user.id)
+    reaction = await pg_holder.reaction.delete(post_id=post_id, user_id=user.id)
 
     if not reaction:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
             detail="Reaction not found"
         )
+
+    await redis_holder.reaction.delete(
+        reaction_id=reaction.id,
+        post_id=post_id,
+        user_id=user.id
+    )
