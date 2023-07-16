@@ -1,4 +1,4 @@
-from webtronics_social_network.types.errors.common import Error
+from webtronics_social_network.server.api.api_v1.responses.common import Error
 
 
 class ReactionNotFound(Error):

@@ -12,11 +12,11 @@ from starlette.status import (
 from webtronics_social_network import types, exceptions
 from webtronics_social_network.database.postgres.holder import PostgresHolder
 from webtronics_social_network.services.auth import create_access_token, create_refresh_token
-from webtronics_social_network.types import errors
+from webtronics_social_network.server.api.api_v1 import responses
 from webtronics_social_network.server.api.api_v1.dependencies.database.postgres import PostgresHolderMarker
 from webtronics_social_network.server.api.api_v1.dependencies.security import CryptContextMarker
 from webtronics_social_network.server.api.api_v1.dependencies.settings import SettingsMarker
-from webtronics_social_network.server.api.api_v1.responses.user import user_auth_responses
+from webtronics_social_network.server.api.api_v1.responses.main import user_auth_responses
 from webtronics_social_network.server.core.auth import (
     authenticate_user,
     get_user,
@@ -33,7 +33,7 @@ router = APIRouter()
     responses={
         HTTP_401_UNAUTHORIZED: {
             "description": "Wrong username (email) or password error",
-            "model": errors.WrongUsernameOrPassword
+            "model": responses.WrongUsernameOrPassword
         }
     }
 )
@@ -79,7 +79,7 @@ async def login(
     responses={
         HTTP_401_UNAUTHORIZED: {
             "description": "Could not validate credentials error",
-            "model": errors.NotValidateCredentials
+            "model": responses.NotValidateCredentials
         }
     }
 )
@@ -120,7 +120,7 @@ async def read_all(
     response_model_exclude={"email", "email_token", "email_verified", "password"},
     responses=user_auth_responses | {
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.UserNotFound
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.UserNotFound
         }
     }
 )
@@ -143,7 +143,7 @@ async def read(id: uuid.UUID, pg_holder: PostgresHolder = Depends(PostgresHolder
     responses={
         HTTP_409_CONFLICT: {
             "description": "User username already exists error",
-            "model": errors.UsernameAlreadyExists
+            "model": responses.UsernameAlreadyExists
         }
     }
 )

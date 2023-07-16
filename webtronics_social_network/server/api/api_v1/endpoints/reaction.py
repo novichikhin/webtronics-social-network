@@ -6,11 +6,11 @@ from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN, HTTP_200_OK
 from webtronics_social_network import types
 from webtronics_social_network.server.api.api_v1.dependencies.database.postgres import PostgresHolderMarker
 from webtronics_social_network.server.api.api_v1.dependencies.database.redis import RedisHolderMarker
-from webtronics_social_network.server.api.api_v1.responses.user import user_auth_responses
+from webtronics_social_network.server.api.api_v1.responses.main import user_auth_responses
 from webtronics_social_network.server.core.auth import get_user
 from webtronics_social_network.database.postgres.holder import PostgresHolder
 from webtronics_social_network.database.redis.holder import RedisHolder
-from webtronics_social_network.types import errors
+from webtronics_social_network.server.api.api_v1 import responses
 
 router = APIRouter(responses=user_auth_responses, dependencies=[Depends(get_user)])
 
@@ -27,11 +27,11 @@ async def read(post_id: uuid.UUID, redis_holder: RedisHolder = Depends(RedisHold
     response_model=types.Reaction,
     responses={
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.PostNotFound
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.PostNotFound
         },
         HTTP_403_FORBIDDEN: {
             "description": "You can only post reactions to other people's posts error",
-            "model": errors.CanOnlyPostReactionsOtherPeoplesPosts
+            "model": responses.CanOnlyPostReactionsOtherPeoplesPosts
         }
     }
 )
@@ -76,7 +76,7 @@ async def create(
     status_code=HTTP_200_OK,
     responses={
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.ReactionNotFound
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.ReactionNotFound
         }
     }
 )

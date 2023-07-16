@@ -7,10 +7,10 @@ from webtronics_social_network import types, exceptions
 from webtronics_social_network.database.redis.holder import RedisHolder
 from webtronics_social_network.server.api.api_v1.dependencies.database.postgres import PostgresHolderMarker
 from webtronics_social_network.server.api.api_v1.dependencies.database.redis import RedisHolderMarker
-from webtronics_social_network.server.api.api_v1.responses.user import user_auth_responses
+from webtronics_social_network.server.api.api_v1.responses.main import user_auth_responses
 from webtronics_social_network.server.core.auth import get_user
 from webtronics_social_network.database.postgres.holder import PostgresHolder
-from webtronics_social_network.types import errors
+from webtronics_social_network.server.api.api_v1 import responses
 
 router = APIRouter(responses=user_auth_responses, dependencies=[Depends(get_user)])
 
@@ -41,7 +41,7 @@ async def read_all(
     response_model=types.Post,
     responses={
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.PostNotFound
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.PostNotFound
         }
     }
 )
@@ -84,10 +84,10 @@ async def create(
     responses={
         HTTP_400_BAD_REQUEST: {
             "description": "Unable to update post error",
-            "model": errors.UnableUpdatePost
+            "model": responses.UnableUpdatePost
         },
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.PostNotFoundOrNotCreator
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.PostNotFoundOrNotCreator
         }
     }
 )
@@ -126,7 +126,7 @@ async def update(
     response_model=types.Post,
     responses={
         HTTP_404_NOT_FOUND: {
-            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | errors.PostNotFoundOrNotCreator
+            "model": user_auth_responses[HTTP_404_NOT_FOUND]["model"] | responses.PostNotFoundOrNotCreator
         }
     }
 )

@@ -10,7 +10,7 @@ from webtronics_social_network.server.api.api_v1.dependencies.database.postgres 
 )
 from webtronics_social_network.server.api.api_v1.dependencies.database.redis import RedisClientMarker, RedisHolderMarker
 from webtronics_social_network.database.redis.factory import redis_create_client, redis_create_holder
-from webtronics_social_network.types import errors
+from webtronics_social_network.server.api.api_v1 import responses
 from webtronics_social_network.server.api.api_v1.dependencies.security import CryptContextMarker
 from webtronics_social_network.server.api.api_v1.dependencies.settings import SettingsMarker
 from webtronics_social_network.server.api.api_v1.endpoints.setup import register_routers
@@ -36,10 +36,10 @@ def register_app(settings: types.Setting) -> FastAPI:
             Exception: exception_handler
         },
         responses={
-            HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation error", "model": errors.Validation},
+            HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation error", "model": responses.Validation},
             HTTP_500_INTERNAL_SERVER_ERROR: {
                 "description": "Something went wrong error",
-                "model": errors.SomethingWentWrong
+                "model": responses.SomethingWentWrong
             }
         },
         lifespan=lifespan
